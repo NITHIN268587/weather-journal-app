@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head><title>Weather Journal</title></head>
+  <body>
+    <h1>Weather Journal</h1>
+    <input id="city" placeholder="Enter city" />
+    <input id="mood" placeholder="How do you feel?" />
+    <button onclick="submitEntry()">Submit</button>
+    <ul id="entries"></ul>
+
+    <script>
+      async function submitEntry() {
+        const city = document.getElementById('city').value;
+        const mood = document.getElementById('mood').value;
+        const res = await fetch('/api/weather', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ city, mood })
+        });
+        const data = await res.json();
+        loadEntries();
+      }
+
+      async function loadEntries() {
+        const res = await fetch('/api/weather');
+        const data = await res.json();
+        const list = document.getElementById('entries');
+        list.innerHTML = "";
+        data.forEach(entry => {
+          const li = document.createElement('li');
+          li.innerText = `${entry.city} - ${entry.temp}°C - ${entry.mood}`;
+          list.appendChild(li);
+        });
+      }
+
+      loadEntries();
+    </script>
+  </body>
+</html>
